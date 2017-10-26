@@ -19,33 +19,46 @@ class App extends React.Component {
     var searchString = document.getElementsByClassName('form-control')[0].value;
     this.setState(
       { searchText: searchString },
+
       this.requestVideos
     );
   }
 
   requestVideos() {
     var self = this;
-    $.get({
-      url: 'https://www.googleapis.com/youtube/v3/search',
-      dataType: 'json',
-      data: {
-        q: this.state.searchText,
-        maxResults: 5,
-        key: window.YOUTUBE_API_KEY,
-        videoEmbeddable: 'true',
-        type: 'video',
-        part: 'snippet',
-        order: 'relevance'
-      },
-      success: function(data) {
-        self.setState({
-          videos: data.items
-        });
-      },
-      error: function(data) {
-        console.error('failed', data);
-      }
-    });
+    var options = {
+      q: this.state.searchText,
+      maxResults: 5,
+      key: window.YOUTUBE_API_KEY,
+      videoEmbeddable: 'true',
+      type: 'video',
+      part: 'snippet',
+      order: 'relevance'
+    };
+    // var callback = this.setState.bind(this) function(data) {
+    // }
+    searchYouTube(options, (data) => { this.setState({ videos: data.items }); });
+    // $.get({
+    //   url: 'https://www.googleapis.com/youtube/v3/search',
+    //   dataType: 'json',
+    //   data: {
+    //     q: this.state.searchText,
+    //     maxResults: 5,
+    //     key: window.YOUTUBE_API_KEY,
+    //     videoEmbeddable: 'true',
+    //     type: 'video',
+    //     part: 'snippet',
+    //     order: 'relevance'
+    //   },
+    //   success: function(data) {
+    //     self.setState({
+    //       videos: data.items
+    //     });
+    //   },
+    //   error: function(data) {
+    //     console.error('failed', data);
+    //   }
+    // });
   }
 
   render() {

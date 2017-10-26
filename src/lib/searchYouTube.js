@@ -1,5 +1,15 @@
 var searchYouTube = (options, callback) => {
-  // TODO
+  $.get({
+    url: 'https://www.googleapis.com/youtube/v3/search',
+    dataType: 'json',
+    data: options,
+    success: function(data) {
+      callback(data);
+    },
+    error: function(data) {
+      console.error('failed', data);
+    }
+  });
 };
 
 window.searchYouTube = searchYouTube;
