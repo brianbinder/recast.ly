@@ -2,32 +2,35 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeVideo: 0,
-      searchText: '',
-      videos: exampleVideoData
+      activeVideo: null,
+      videos: []
     };
   }
 
-  clickHandler(event) {
-    this.clicked = event.target.id;
+  componentDidMount() {
+    this.requestVideos('dog');
+  }
+
+  clickHandler(video) {
     this.setState({
-      activeVideo: event.target.id
+      activeVideo: video
     });
   }
 
-  submitHandler() {
-    var searchString = document.getElementsByClassName('form-control')[0].value;
-    this.setState(
-      { searchText: searchString },
-
-      this.requestVideos
-    );
+  submitHandler(query) {
+    var searchString = document.getElementsByClassName('form-control')[0].value ? document.getElementsByClassName('form-control')[0].value : '';
+    this.requestVideos(searchString);
   }
 
-  requestVideos() {
-    var self = this;
+  keyHandler(event) {
+    if (event.keyCode === 13) {
+      this.submitHandler();
+    }
+  }
+
+  requestVideos(query) {
     var options = {
-      q: this.state.searchText,
+      q: query,
       maxResults: 5,
       key: window.YOUTUBE_API_KEY,
       videoEmbeddable: 'true',
@@ -35,30 +38,13 @@ class App extends React.Component {
       part: 'snippet',
       order: 'relevance'
     };
-    // var callback = this.setState.bind(this) function(data) {
-    // }
-    searchYouTube(options, (data) => { this.setState({ videos: data.items }); });
-    // $.get({
-    //   url: 'https://www.googleapis.com/youtube/v3/search',
-    //   dataType: 'json',
-    //   data: {
-    //     q: this.state.searchText,
-    //     maxResults: 5,
-    //     key: window.YOUTUBE_API_KEY,
-    //     videoEmbeddable: 'true',
-    //     type: 'video',
-    //     part: 'snippet',
-    //     order: 'relevance'
-    //   },
-    //   success: function(data) {
-    //     self.setState({
-    //       videos: data.items
-    //     });
-    //   },
-    //   error: function(data) {
-    //     console.error('failed', data);
-    //   }
-    // });
+
+    this.props.searchYouTube(options, (items) =>
+      this.setState({
+        videos: items,
+        activeVideo: items[0]
+      })
+    );
   }
 
   render() {
@@ -66,12 +52,12 @@ class App extends React.Component {
       <div>
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
-            <Search submitHandler={this.submitHandler.bind(this)}/>
+            <Search submitHandler={this.requestVideos.bind(this)} keyHandler={this.keyHandler.bind(this)} />
           </div>
         </nav>
         <div className="row">
           <div className="col-md-7">
-            <VideoPlayer video={this.state.videos[this.state.activeVideo]} />
+            <VideoPlayer video={this.state.activeVideo} />
           </div>
           <div className="col-md-5">
             <VideoList videos={this.state.videos} clickHandler={this.clickHandler.bind(this)} />
