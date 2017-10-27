@@ -17,17 +17,6 @@ class App extends React.Component {
     });
   }
 
-  submitHandler(query) {
-    var searchString = document.getElementsByClassName('form-control')[0].value ? document.getElementsByClassName('form-control')[0].value : '';
-    this.requestVideos(searchString);
-  }
-
-  keyHandler(event) {
-    if (event.keyCode === 13) {
-      this.submitHandler();
-    }
-  }
-
   requestVideos(query) {
     var options = {
       q: query,
@@ -52,7 +41,7 @@ class App extends React.Component {
       <div>
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
-            <Search submitHandler={this.requestVideos.bind(this)} keyHandler={this.keyHandler.bind(this)} />
+            <Search requestVideos={this.requestVideos.bind(this)} />
           </div>
         </nav>
         <div className="row">
